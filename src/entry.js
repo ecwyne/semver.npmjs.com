@@ -6,13 +6,25 @@ var semver = require('semver');
 
 var REGISTRY_CORS_PROXY = 'https://cors-proxy-ee2bb0df.internal.npmjs.com';
 
+var encodePackageUri = function(pkg) {
+  var ORG_REGEX = /(^@)(.*)/;
+  var ret = pkg;
+  var matches = pkg.match(ORG_REGEX);
+
+  if (matches) {
+    ret = matches[1] + encodeURIComponent(matches[2]);
+  }
+
+  return ret;
+}
+
 app.controller('VersionCtrl', function($scope, $http) {
   var versions;
   $scope.package = 'lodash';
 
   $scope.getVersions = function() {
     $scope.loading = true;
-    $http.get(REGISTRY_CORS_PROXY + '/' + $scope.package)
+    $http.get(REGISTRY_CORS_PROXY + '/' + encodePackageUri($scope.package))
       .success(function(data, status, headers, config) {
         versions = Object.keys(data.versions);
 
