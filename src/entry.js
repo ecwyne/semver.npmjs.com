@@ -12,7 +12,7 @@ app.controller('VersionCtrl', function($scope, $http) {
 
   $scope.getVersions = function() {
     $scope.loading = true;
-    $http.get(REGISTRY_CORS_PROXY + '/' + $scope.package)
+    $http.get(REGISTRY_CORS_PROXY + '/' + $scope.package.replace('/', '%2f'))
       .success(function(data, status, headers, config) {
         versions = Object.keys(data.versions);
 
