@@ -6,17 +6,21 @@ var semver = require('semver');
 
 var REGISTRY_CORS_PROXY = 'https://cors-proxy-ee2bb0df.internal.npmjs.com';
 
-app.controller('VersionCtrl', function($scope, $http) {
+app.controller('VersionCtrl', function($scope, $http, $location) {
   var versions;
-  $scope.package = 'lodash';
+  $scope.package = $location.search().package || 'lodash';
+  $scope.range = $location.search().range || '1.x';
 
+  $scope.updateLocation = function() {
+    $location.search({package: $scope.package, range: $scope.range});
+  }
+  
   $scope.getVersions = function() {
     $scope.loading = true;
     $http.get(REGISTRY_CORS_PROXY + '/' + $scope.package.replace('/', '%2f'))
       .success(function(data, status, headers, config) {
         versions = Object.keys(data.versions);
 
-        $scope.range = '1.x'
         $scope.versions = versions.map(function(v) {
           return {
             "version": v
@@ -37,6 +41,7 @@ app.controller('VersionCtrl', function($scope, $http) {
 
         console.log('Sorry, could not load data.')
       });
+    $scope.updateLocation();
   }
 
   $scope.getVersions();
